@@ -1,0 +1,40 @@
+
+
+h1 {
+    text-align: center;
+    font-size: 80px;
+    color: white;
+}
+
+header {
+    background-color: dodgerblue;
+    height: 100px;
+}
+
+button {
+    margin-top: 10px;
+}
+
+article, section {
+    border: solid gray 2px;
+}
+
+main {
+    display: flex;
+    column-gap: 50px;
+    padding-top: 40px;
+    padding-left:40px;
+}
+
+form {
+    border-bottom: solid gray 2px;
+    padding-bottom: 25px;
+}
+
+#today {
+    height: 250px;
+}
+
+#upcoming {
+    height: 250px;
+}
