@@ -49,8 +49,8 @@ function getLocation(city) {
             longitude = data[0].lon;
             console.log(latitude);
             console.log(longitude);
-            getCurrentWeather();
-            //    getUpcomingWeather();
+            // getCurrentWeather();
+               getUpcomingWeather();
         });
 };
 
@@ -58,9 +58,6 @@ function getLocation(city) {
 
 
 function getCurrentWeather() {
-    // fetch request gets a list of all the repos for the node.js organization
-    //   var weatherApi = "lat=" + latitute + "&lon=" + longitude + "&appid={a0290a3291b38896066eaae36dc53ecf";
-    // getLocation();
     todayWeather = [];
 
     requestUrl = "https://api.openweathermap.org/data/2.5/weather?" + "lat=" + latitude + "&lon=" + longitude + "&appid=a0290a3291b38896066eaae36dc53ecf";
@@ -120,9 +117,6 @@ function getCurrentWeather() {
 
 
 function getUpcomingWeather() {
-    // fetch request gets a list of all the repos for the node.js organization
-    //   var weatherApi = "lat=" + latitute + "&lon=" + longitude + "&appid={a0290a3291b38896066eaae36dc53ecf";
-    // getLocation();
     todayWeather = [];
 
     requestUrl = "https://api.openweathermap.org/data/2.5/forecast?" + "lat=" + latitude + "&lon=" + longitude + "&appid=a0290a3291b38896066eaae36dc53ecf";
@@ -133,7 +127,35 @@ function getUpcomingWeather() {
         })
         .then(function (data) {
             console.log(data)
-            //     console.log(typeof data.main.temp);
+                console.log(typeof data.list[2].dt_txt);
+                console.log(data.list[2].dt_txt);
+                var upcomingDate = data.list[2].dt_txt;
+var upcomingDateArr = upcomingDate.split(" ");
+// console.log(upcomingDateArr);
+// console.log(upcomingDateArr[0]);
+console.log(dayjs().format('YYYY-MM-DD'));
+
+for (var i = 0; i < data.list.length; i++) {
+    var upcomingDate = data.list[i].dt_txt;
+    var upcomingDateArr = upcomingDate.split(" ");
+    // console.log(upcomingDateArr);
+    // console.log(upcomingDateArr[0]);
+    // console.log(upcomingDateArr[1]);
+    // console.log(typeof upcomingDateArr[1]);
+    var currentDate = dayjs().format('YYYY-MM-DD');
+
+
+if (upcomingDateArr[0] !== currentDate && upcomingDateArr[1] == '12:00:00' ) {
+    temp = "Temp: " + Math.round(1.8*(data.list[i].main.temp - 273) + 32) + " °F";
+    wind = "Wind: " + Math.round(data.list[i].wind.speed * 2.236936) + " MPH";
+    humidity = "Humidity: " + data.list[i].main.humidity + " %";
+
+    console.log(temp);
+    console.log(wind);
+    console.log(humidity);
+}
+
+
             //     console.log(data.main.humidity);
             //     console.log(data.wind.speed);
             //     temp = "Temp: " + Math.round(1.8*(data.main.temp - 273) + 32) + " °F";
@@ -157,9 +179,10 @@ function getUpcomingWeather() {
 
             //     //       // Appending the link to the tabledata and then appending the tabledata to the tablerow
             //     //       todayWeatherEl.appendChild(liElemt);
-        }
+        }}
         )
 }
+
 //   )};
 
 
