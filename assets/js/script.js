@@ -5,6 +5,7 @@ var todayDateEl = $('#today-date');
 var weatherIconEl = $('#icon');
 var cardsEl = $('.card-body');
 var upcomingForeCastEl = $('.card-text');
+var searchHistorytEl = $('#history-btn-container');
 var latitude;
 var longitude;
 var requestUrl;
@@ -37,12 +38,21 @@ var submitLocationSearch = function (event) {
         }
         else {
             city = city.toLowerCase();
-            citySearched.push(city);
+            for (var i = 0; i < citySearched.length; i++) {
+                if (city !== citySearched[i]) {
+                    citySearched.push(city);
+
+                } else {
+                    return citySearched;
+                }
+            }
+
             console.log(citySearched);
+            console.log(typeof citySearched);
         }
         storeCity();
     } else if (getLocation(city) == null) {
-        alert('Please enter a city');
+        alert('Please enter a valid city');
         return;
     }
 };
@@ -65,12 +75,9 @@ function getLocation(city) {
             return response.json();
         })
         .then(function (data) {
-            // console.log(data)
-
+            console.log(data);
             latitude = data[0].lat;
             longitude = data[0].lon;
-            // console.log(latitude);
-            // console.log(longitude);
             getCurrentWeather();
             getUpcomingWeather();
         });
@@ -83,7 +90,7 @@ function getCurrentWeather() {
 
     weather = [];
 
-    if ( todayWeatherEl !== null){
+    if (todayWeatherEl !== null) {
         todayWeatherEl.empty();
     }
 
@@ -94,7 +101,7 @@ function getCurrentWeather() {
             return response.json();
         })
         .then(function (data) {
-            console.log(data);
+            // console.log(data);
 
             temp = "Temp: " + Math.round(1.8 * (data.main.temp - 273) + 32) + " °F";
             wind = "Wind: " + Math.round(data.wind.speed * 2.236936) + " MPH";
@@ -112,8 +119,8 @@ function getCurrentWeather() {
 
             }
 
-            else if (data.weather[0].main == "Rain") {
-                weatherIconEl.attr("class", "fa-solid fa-cloud-shower-heavy");
+            else if (data.weather[0].main == "Rain" || data.weather[0].main == "Drizzle") {
+                weatherIconEl.attr("class", "fa-solid fa-cloud-rain");
 
             } else if (data.weather[0].main == "Snow") {
                 weatherIconEl.attr("class", "fa-solid fa-snowflake");
@@ -150,8 +157,8 @@ function getUpcomingWeather() {
         })
         .then(function (data) {
 
-            console.log(dayjs().format('YYYY-MM-DD'));
-            
+            // console.log(dayjs().format('YYYY-MM-DD'));
+
             for (var i = 0; i < data.list.length; i++) {
                 var upcomingDate = data.list[i].dt_txt;
                 var upcomingDateArr = upcomingDate.split(" ");
@@ -160,7 +167,7 @@ function getUpcomingWeather() {
 
                 if (upcomingDateArr[0] !== currentDate && upcomingDateArr[1] == '12:00:00') {
                     dayDateArr.push(upcomingDateArr[0]);
-                   
+
                     temp = "Temp: " + Math.round(1.8 * (data.list[i].main.temp - 273) + 32) + " °F";
                     wind = "Wind: " + Math.round(data.list[i].wind.speed * 2.236936) + " MPH";
                     humidity = "Humidity: " + data.list[i].main.humidity + " %";
@@ -171,25 +178,14 @@ function getUpcomingWeather() {
                 }
             }
 
-            console.log(upcomingWeather);
-            console.log(typeof upcomingWeather);
-            // var upcomingForeCastEl = cardsEl.children('ul');
-console.log(upcomingForeCastEl);
-upcomingForeCastEl.empty();
-
-    // if ( upcomingForeCastEl !== null){
-    //     upcomingForeCastEl.empty();
-    // }
+            upcomingForeCastEl.empty();
 
             for (var j = 0; j < upcomingWeather.length; j++) {
-                console.log(j);
                 var weatherData = upcomingWeather[j];
-                console.log(weatherData);
 
                 for (var l = 0; l < weatherData.length; l++) {
                     var liElemt = document.createElement('li');
                     liElemt.textContent = weatherData[l];
-                    console.log(liElemt);
                     upcomingForeCastEl[j].append(liElemt);
                 }
 
@@ -203,36 +199,17 @@ upcomingForeCastEl.empty();
 }
 
 
-// function storeSearch(city) {
+function createHistoryBtn() {
+    citySearched = JSON.parse(localStorage.getItem("City Searched"));
+    for (var i = 0; i < citySearched.length; i++) {
+        var historyBtn = document.createElement('button');
+        historyBtn.innerText = citySearched[i].toUpperCase();
+        searchHistorytEl.append(historyBtn);
+        historyBtn.classList.add("btn", "btn-primary", "col-lg-12");
+    }
+};
 
-//     var coordinates = [latitude, longitude];
-//     console.log(coordinates);
-
-//     if (coordinates === undefined) {
-//         return;
-//     }
-
-//     else {
-//         localStorage.setItem(city.toLowerCase(), JSON.stringify(coordinates));
-//     }
-
-//     cityEl.val().trim();
-//     saveBtns.each(function () {
-//         var key = $(this).parent().attr('id');
-//         var textArea = ($(this).prev()).children();
-//         textArea.val(localStorage.getItem(key));
-//         $(this).on('click', function (event) {
-//             dayEvent = textArea.val().trim();
-//             localStorage.setItem(key, dayEvent);
-//         });
-//     });
-
-// }
-
-// function createHistoryBtn() {
-//     localStorage.getItem();
-//     console.log(city);
-// }
+createHistoryBtn();
 
 
 // // Function that displays each score into a list
