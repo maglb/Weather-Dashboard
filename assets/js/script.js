@@ -206,6 +206,13 @@ function createHistoryBtn() {
         historyBtn.innerText = citySearched[i].toUpperCase();
         searchHistorytEl.append(historyBtn);
         historyBtn.classList.add("btn", "btn-primary", "col-lg-12");
+        historyBtn.addEventListener('click', function (event){
+            event.stopPropagation();
+console.log(this);
+city = this.innerText;
+console.log(city);
+getLocation(city);
+        })
     }
 };
 
