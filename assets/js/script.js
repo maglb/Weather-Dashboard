@@ -16,60 +16,52 @@ var weather;
 var dayDateArr = [];
 var upcomingWeather;
 var citySearched = [];
+var city;
 
+createHistoryBtn();
 
-// var city = cityEl.value.trim();
+// EVENT LISTENER
 
-console.log(todayWeatherEl);
+// Add event listener to the search button
+searchBtn.on('click', submitLocationSearch);
+
+//FUNCTIONS
+
+// Function to store history search into the loacal storage
+function storeCity() {
+    localStorage.setItem("City Searched", JSON.stringify(citySearched));
+}
 
 var submitLocationSearch = function (event) {
     event.preventDefault();
     console.log("event triggered");
-    var city = cityEl.val().trim();
+    city = cityEl.val().trim();
     citySearched = JSON.parse(localStorage.getItem("City Searched"));
 
     if (city) {
         getLocation(city);
-        todayDateEl.text(city.toUpperCase() + " " + dayjs().format('DD/MM/YYYY'));
-
+        city = city.toLowerCase();
         if (citySearched == null) {
-            city = city.toLowerCase();
             citySearched = [city];
+            console.log("01")
+            storeCity();
         }
-        else {
-            city = city.toLowerCase();
-            for (var i = 0; i < citySearched.length; i++) {
-                if (city !== citySearched[i]) {
-                    citySearched.push(city);
-
-                } else {
-                    return citySearched;
-                }
-            }
-
+        else if (citySearched.includes(city)) {
             console.log(citySearched);
-            console.log(typeof citySearched);
+            return citySearched;
+
+        } else {
+            citySearched.push(city);
+            storeCity();
         }
-        storeCity();
-    } else if (getLocation(city) == null) {
-        alert('Please enter a valid city');
-        return;
     }
 };
 
-function storeCity() {
-    // Stringify and set key in localStorage to userScore array
-    localStorage.setItem("City Searched", JSON.stringify(citySearched));
-}
-
-
-searchBtn.on('click', submitLocationSearch);
-
 // Function to get the latitude and longitude of the search city through the GeoAPI
 function getLocation(city) {
-    // fetch request gets a list of all the repos for the node.js organization
-    requestUrl = "http://api.openweathermap.org/geo/1.0/direct?q=" + city + "&appid=a0290a3291b38896066eaae36dc53ecf";
 
+    requestUrl = "http://api.openweathermap.org/geo/1.0/direct?q=" + city + "&appid=a0290a3291b38896066eaae36dc53ecf";
+    todayDateEl.text(city.toUpperCase() + " " + dayjs().format('DD/MM/YYYY'));
     fetch(requestUrl)
         .then(function (response) {
             return response.json();
@@ -83,12 +75,35 @@ function getLocation(city) {
         });
 };
 
+// Function to get data stored into the local storage and create history search button
+function createHistoryBtn() {
 
+    citySearched = JSON.parse(localStorage.getItem("City Searched"));
 
+    if (citySearched == null) {
+        return;
+    } else {
+        for (var i = 0; i < citySearched.length; i++) {
+            var historyBtn = document.createElement('button');
+            historyBtn.innerText = citySearched[i].toUpperCase();
+            searchHistorytEl.append(historyBtn);
+            historyBtn.classList.add("btn", "btn-primary", "col-lg-12");
+            historyBtn.addEventListener('click', function (event) {
+                event.stopPropagation();
+                console.log(this);
+                city = this.innerText;
+                console.log(city);
+                getLocation(city);
+            })
+        }
+    }
+};
 
+// Function to get the current weather of the searched city through the OpenWeather API
 function getCurrentWeather() {
 
     weather = [];
+    console.log(city);
 
     if (todayWeatherEl !== null) {
         todayWeatherEl.empty();
@@ -101,7 +116,8 @@ function getCurrentWeather() {
             return response.json();
         })
         .then(function (data) {
-            // console.log(data);
+            console.log(data);
+            todayDateEl.text(city.toUpperCase() + " " + dayjs().format('DD/MM/YYYY'));
 
             temp = "Temp: " + Math.round(1.8 * (data.main.temp - 273) + 32) + " °F";
             wind = "Wind: " + Math.round(data.wind.speed * 2.236936) + " MPH";
@@ -127,25 +143,19 @@ function getCurrentWeather() {
             } else if (data.weather[0].main == "Clear") {
                 weatherIconEl.attr("class", "fa-solid fa-sun");
             } else {
-                weatherIconEl.text("");
+                weatherIconEl.attr("class", "");
             }
 
-            //Loop over the data to generate a table, each table row will have a link to the repo url
             for (var i = 0; i < weather.length; i++) {
-                // Creating elements, tablerow, tabledata, and anchor
+
                 var liElemt = document.createElement('li');
-
-                // Setting the text of link and the href of the link
                 liElemt.textContent = weather[i];
-
-                // Appending the link to the tabledata and then appending the tabledata to the tablerow
                 todayWeatherEl.append(liElemt);
             }
         });
 };
 
-
-
+// Function to get the 5-Day forecast of the searched city through the OpenWeather API
 function getUpcomingWeather() {
     weather = [];
     upcomingWeather = [];
@@ -156,9 +166,7 @@ function getUpcomingWeather() {
             return response.json();
         })
         .then(function (data) {
-
-            // console.log(dayjs().format('YYYY-MM-DD'));
-
+            console.log(data);
             for (var i = 0; i < data.list.length; i++) {
                 var upcomingDate = data.list[i].dt_txt;
                 var upcomingDateArr = upcomingDate.split(" ");
@@ -197,52 +205,3 @@ function getUpcomingWeather() {
             }
         })
 }
-
-
-function createHistoryBtn() {
-    citySearched = JSON.parse(localStorage.getItem("City Searched"));
-    for (var i = 0; i < citySearched.length; i++) {
-        var historyBtn = document.createElement('button');
-        historyBtn.innerText = citySearched[i].toUpperCase();
-        searchHistorytEl.append(historyBtn);
-        historyBtn.classList.add("btn", "btn-primary", "col-lg-12");
-        historyBtn.addEventListener('click', function (event){
-            event.stopPropagation();
-console.log(this);
-city = this.innerText;
-console.log(city);
-getLocation(city);
-        })
-    }
-};
-
-createHistoryBtn();
-
-
-// // Function that displays each score into a list
-// function displayScore() {
-
-//     clearInterval(timeInterval);
-//     listContainer.textContent = "";
-
-//     gameEl.setAttribute("class", "hidden");
-//     homepageEl.setAttribute("class", "hidden");
-//     highScoreEl.setAttribute("class", "shown");
-
-//     userScore = JSON.parse(localStorage.getItem("userScore"));
-//     if (userScore == null) {
-//         return;
-//     }
-//     // Display a new li for each user score
-//     else {
-//         for (var i = 0; i < userScore.length; i++) {
-//             var highScore = userScore[i];
-
-//             var li = document.createElement("li");
-//             li.textContent = highScore;
-//             console.log(li);
-//             listContainer.appendChild(li);
-//             // console.log(listContainer);
-//         }
-//     }
-// };
