@@ -55,6 +55,7 @@ var submitLocationSearch = function (event) {
             storeCity();
         }
     }
+    // createHistoryBtn();
 };
 
 // Function to get the latitude and longitude of the search city through the GeoAPI
@@ -79,15 +80,17 @@ function getLocation(city) {
 function createHistoryBtn() {
 
     citySearched = JSON.parse(localStorage.getItem("City Searched"));
-
+    console.log(citySearched);
     if (citySearched == null) {
         return;
     } else {
         for (var i = 0; i < citySearched.length; i++) {
+            console.log(i);
             var historyBtn = document.createElement('button');
             historyBtn.innerText = citySearched[i].toUpperCase();
             searchHistorytEl.append(historyBtn);
             historyBtn.classList.add("btn", "btn-primary", "col-lg-12");
+            
             historyBtn.addEventListener('click', function (event) {
                 event.stopPropagation();
                 console.log(this);
