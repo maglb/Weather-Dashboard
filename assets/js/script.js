@@ -61,7 +61,7 @@ var submitLocationSearch = function (event) {
 // Function to get the latitude and longitude of the search city through the GeoAPI
 function getLocation(city) {
 
-    requestUrl = "http://api.openweathermap.org/geo/1.0/direct?q=" + city + "&appid=a0290a3291b38896066eaae36dc53ecf";
+    requestUrl = "https://api.openweathermap.org/geo/1.0/direct?q=" + city + "&appid=a0290a3291b38896066eaae36dc53ecf";
     todayDateEl.text(city.toUpperCase() + " " + dayjs().format('DD/MM/YYYY'));
     fetch(requestUrl)
         .then(function (response) {
