@@ -1,5 +1,5 @@
 var cityEl = $('#search-city');
-var searchBtn = $('#search-btn');
+var searchBtn = $('#search-form');
 var todayWeatherEl = $('#today-weather');
 var todayDateEl = $('#today-date');
 var weatherIconEl = $('#icon');
@@ -17,13 +17,9 @@ var dayDateArr = [];
 var upcomingWeather;
 var citySearched = [];
 var city;
-
+console.log(searchBtn);
 createHistoryBtn();
 
-// EVENT LISTENER
-
-// Add event listener to the search button
-searchBtn.on('click', submitLocationSearch);
 
 //FUNCTIONS
 
@@ -42,21 +38,25 @@ var submitLocationSearch = function (event) {
         getLocation(city);
         city = city.toLowerCase();
         if (citySearched == null) {
-            citySearched = [city];
-            console.log("01")
-            storeCity();
+            citySearched = [];
         }
-        else if (citySearched.includes(city)) {
+        if (citySearched.includes(city)) {
             console.log(citySearched);
             return citySearched;
 
         } else {
             citySearched.push(city);
             storeCity();
+            createHistoryBtn();
         }
     }
     // createHistoryBtn();
 };
+
+// EVENT LISTENER
+
+// Add event listener to the search button
+searchBtn.on('submit', submitLocationSearch);
 
 // Function to get the latitude and longitude of the search city through the GeoAPI
 function getLocation(city) {
@@ -78,7 +78,7 @@ function getLocation(city) {
 
 // Function to get data stored into the local storage and create history search button
 function createHistoryBtn() {
-
+searchHistorytEl.empty();
     citySearched = JSON.parse(localStorage.getItem("City Searched"));
     console.log(citySearched);
     if (citySearched == null) {
